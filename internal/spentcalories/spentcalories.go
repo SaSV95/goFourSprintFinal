@@ -88,8 +88,17 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 }
 
 func RunningSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
-	if steps <= 0 || weight <= 0 || height <= 0 || duration.Seconds() <= 0 {
-		return 0, fmt.Errorf("ошибка в расчётах калорий во время бега. Значения шагов, продолжительности, веса или роста должны быть больше нуля")
+	if steps <= 0 {
+		return 0, fmt.Errorf("количество шагов должно быть больше нуля, значение на данный момент %d", steps)
+	}
+	if weight <= 0 {
+		return 0, fmt.Errorf("значение веса должно быть больше нуля, значение на данный момент %.2f", weight)
+	}
+	if height <= 0 {
+		return 0, fmt.Errorf("значение роста должно быть больше нуля, значение на данный момент %.2f", height)
+	}
+	if duration.Seconds() <= 0 {
+		return 0, fmt.Errorf("значение продолжительности должно быть больше нуля, значение на данный момент %.2f", duration.Seconds())
 	}
 	calcMeanSpeed := meanSpeed(steps, height, duration)
 	durationInMinutes := duration.Minutes()
@@ -101,8 +110,17 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 }
 
 func WalkingSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
-	if steps <= 0 || weight <= 0 || height <= 0 || duration.Seconds() < 0 {
-		return 0, fmt.Errorf("ошибка в расчётах калорий во время ходьбы. Значения шагов, продолжительности, веса или роста должны быть больше нуля")
+	if steps <= 0 {
+		return 0, fmt.Errorf("количество шагов должно быть больше нуля, значение на данный момент %d", steps)
+	}
+	if weight <= 0 {
+		return 0, fmt.Errorf("значение веса должно быть больше нуля, значение на данный момент %.2f", weight)
+	}
+	if height <= 0 {
+		return 0, fmt.Errorf("значение роста должно быть больше нуля, значение на данный момент %.2f", height)
+	}
+	if duration.Seconds() <= 0 {
+		return 0, fmt.Errorf("значение продолжительности должно быть больше нуля, значение на данный момент %.2f", duration.Seconds())
 	}
 	calcMeanSpeed := meanSpeed(steps, height, duration)
 	durationInMinutes := duration.Minutes()
