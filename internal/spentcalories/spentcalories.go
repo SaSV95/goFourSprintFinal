@@ -23,7 +23,7 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 	}
 	stepsPart, err := strconv.Atoi(activity3Parts[0])
 	if err != nil {
-		return 0, "", 0, err
+		return 0, "", 0, fmt.Errorf("ошибка в данных о количестве шагов %v", err)
 	}
 	if stepsPart <= 0 {
 		return 0, "", 0, fmt.Errorf("количество шагов должно быть больше нуля")
@@ -70,12 +70,12 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 	case "Ходьба":
 		calcCalories, err = WalkingSpentCalories(stepsAct, weight, height, timeAct)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("ошибка расчёта калорий при ходьбе %v", err)
 		}
 	case "Бег":
 		calcCalories, err = RunningSpentCalories(stepsAct, weight, height, timeAct)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("ошибка расчёта калорий при беге %v", err)
 		}
 	default:
 		return "", fmt.Errorf("неизвестный тип тренировки")

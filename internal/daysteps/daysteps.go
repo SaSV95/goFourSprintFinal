@@ -24,16 +24,16 @@ func parsePackage(data string) (int, time.Duration, error) {
 	}
 	stepsPart, err := strconv.Atoi(activity2Parts[0])
 	if err != nil {
-		return 0, 0, fmt.Errorf("ошибка в данных о количестве шагов")
+		return 0, 0, fmt.Errorf("ошибка в данных о количестве шагов %v", err)
 	}
 	if stepsPart <= 0 {
 		return 0, 0, fmt.Errorf("количество шагов должно быть больше нуля")
 	}
 	timePart, err := time.ParseDuration(activity2Parts[1])
 	if err != nil {
-		return 0, 0, fmt.Errorf("ошибка в данных о количестве времени")
+		return 0, 0, fmt.Errorf("ошибка в данных о количестве времени %v", err)
 	}
-	if timePart.Seconds() <= 0 {
+	if timePart <= 0 {
 		return 0, 0, fmt.Errorf("количество времени должно быть больше нуля")
 	}
 	return stepsPart, timePart, nil
@@ -42,25 +42,22 @@ func parsePackage(data string) (int, time.Duration, error) {
 func DayActionInfo(data string, weight, height float64) string {
 	steps, duration, err := parsePackage(data)
 	if err != nil {
-		fmt.Println(fmt.Errorf("ошибка парсинга строки"), err)
 		log.Println(fmt.Errorf("ошибка парсинга строки"), err)
 		return ""
 	}
 	if duration <= 0 {
-		fmt.Printf("продолжительность должна быть больше нуля")
-		log.Printf("продолжительность должна быть больше нуля\n")
+		fmt.Printf("продолжительность должна быть больше нуля, текущее значение %d", duration)
 		return ""
 	}
 	if steps <= 0 {
-		fmt.Printf("количество шагов должно быть больше нуля.")
-		log.Printf("количество шагов должно быть больше нуля.\n")
+		fmt.Printf("количество шагов должно быть больше нуля, текущее значение %d", steps)
 		return ""
 	}
 	distInMeters := float64(steps) * stepLength
 	distInKm := distInMeters / mInKm
 	totalCalories, err := spentcalories.WalkingSpentCalories(steps, weight, height, duration)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("ошибка расчёта калорий %v", err)
 		return ""
 	}
 
