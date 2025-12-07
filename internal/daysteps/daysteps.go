@@ -1,7 +1,13 @@
 package daysteps
 
 import (
+	"fmt"
+	"log"
+	"strconv"
+	"strings"
 	"time"
+
+	"github.com/Yandex-Practicum/tracker/internal/spentcalories"
 )
 
 const (
@@ -12,9 +18,48 @@ const (
 )
 
 func parsePackage(data string) (int, time.Duration, error) {
-	// TODO: реализовать функцию
+	activity2Parts := strings.Split(data, ",")
+	if len(activity2Parts) != 2 {
+		return 0, 0, fmt.Errorf("ошибка разделения данных на 2 части! Количество частей на данный момент: %d", len(activity2Parts))
+	}
+	stepsPart, err := strconv.Atoi(activity2Parts[0])
+	if err != nil {
+		return 0, 0, fmt.Errorf("ошибка в данных о количестве шагов %v", err)
+	}
+	if stepsPart <= 0 {
+		return 0, 0, fmt.Errorf("количество шагов должно быть больше нуля")
+	}
+	timePart, err := time.ParseDuration(activity2Parts[1])
+	if err != nil {
+		return 0, 0, fmt.Errorf("ошибка в данных о количестве времени %v", err)
+	}
+	if timePart <= 0 {
+		return 0, 0, fmt.Errorf("количество времени должно быть больше нуля")
+	}
+	return stepsPart, timePart, nil
 }
 
 func DayActionInfo(data string, weight, height float64) string {
-	// TODO: реализовать функцию
+	steps, duration, err := parsePackage(data)
+	if err != nil {
+		log.Println(fmt.Errorf("ошибка парсинга строки"), err)
+		return ""
+	}
+	if duration <= 0 {
+		fmt.Printf("продолжительность должна быть больше нуля, текущее значение %d", duration)
+		return ""
+	}
+	if steps <= 0 {
+		fmt.Printf("количество шагов должно быть больше нуля, текущее значение %d", steps)
+		return ""
+	}
+	distInMeters := float64(steps) * stepLength
+	distInKm := distInMeters / mInKm
+	totalCalories, err := spentcalories.WalkingSpentCalories(steps, weight, height, duration)
+	if err != nil {
+		fmt.Printf("ошибка расчёта калорий %v", err)
+		return ""
+	}
+
+	return fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n", steps, distInKm, totalCalories)
 }
